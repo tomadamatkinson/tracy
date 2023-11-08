@@ -21,16 +21,16 @@
 #include <inttypes.h>
 #include <sys/stat.h>
 
-#include <capstone.h>
+#include <capstone/capstone.h>
 
 #define ZDICT_STATIC_LINKING_ONLY
-#include "../zstd/zdict.h"
+#include "zstd/zdict.h"
 
-#include "../public/common/TracyProtocol.hpp"
-#include "../public/common/TracySystem.hpp"
-#include "../public/common/TracyYield.hpp"
-#include "../public/common/TracyStackFrames.hpp"
-#include "../public/common/TracyVersion.hpp"
+#include "public/common/TracyProtocol.hpp"
+#include "public/common/TracySystem.hpp"
+#include "public/common/TracyYield.hpp"
+#include "public/common/TracyStackFrames.hpp"
+#include "public/common/TracyVersion.hpp"
 #include "TracyFileRead.hpp"
 #include "TracyFileWrite.hpp"
 #include "TracyPrint.hpp"

@@ -12,10 +12,10 @@
 #include <utility>
 
 #include "TracyFileHeader.hpp"
-#include "../public/common/tracy_lz4.hpp"
-#include "../public/common/tracy_lz4hc.hpp"
-#include "../public/common/TracyForceInline.hpp"
-#include "../zstd/zstd.h"
+#include "public/common/tracy_lz4.hpp"
+#include "public/common/tracy_lz4hc.hpp"
+#include "public/common/TracyForceInline.hpp"
+#include "zstd/zstd.h"
 
 namespace tracy
 {

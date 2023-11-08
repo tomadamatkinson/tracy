@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+include(CPM.cmake)
+
 # Run version helper script
 include(version.cmake)
 
@@ -8,60 +10,26 @@ set(TRACY_VERSION_MINOR ${minor})
 set(TRACY_VERSION_PATCH ${patch})
 set(TRACY_VERSION_STRING "${TRACY_VERSION_MAJOR}.${TRACY_VERSION_MINOR}.${TRACY_VERSION_PATCH}")
 
-project(Tracy LANGUAGES CXX VERSION ${TRACY_VERSION_STRING})
-
-if(${BUILD_SHARED_LIBS})
-	set(DEFAULT_STATIC OFF)
-else()
-	set(DEFAULT_STATIC ON)
-endif()
-
-option(TRACY_STATIC "Whether to build Tracy as a static library" ${DEFAULT_STATIC})
-
-find_package(Threads REQUIRED)
+project(Tracy LANGUAGES C CXX ASM VERSION ${TRACY_VERSION_STRING})
 
 set(TRACY_PUBLIC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/public)
-
-if(TRACY_STATIC)
-	set(TRACY_VISIBILITY "STATIC")
-else()
-	set(TRACY_VISIBILITY "SHARED")
-endif()
-
-add_library(TracyClient ${TRACY_VISIBILITY} "${TRACY_PUBLIC_DIR}/TracyClient.cpp")
-target_compile_features(TracyClient PUBLIC cxx_std_11)
-target_include_directories(TracyClient SYSTEM PUBLIC
-    $<BUILD_INTERFACE:${TRACY_PUBLIC_DIR}>
-    $<INSTALL_INTERFACE:include>)
-target_link_libraries(
-    TracyClient
-    PUBLIC
-        Threads::Threads
-        ${CMAKE_DL_LIBS}
-)
-
-# Public dependency on some libraries required when using Mingw
-if(WIN32 AND ${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
-    target_link_libraries(TracyClient PUBLIC ws2_32 dbghelp)
-endif()
-
-if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
-    find_library(EXECINFO_LIBRARY NAMES execinfo REQUIRED)
-    target_link_libraries(TracyClient PUBLIC ${EXECINFO_LIBRARY})
-endif()
-
-add_library(Tracy::TracyClient ALIAS TracyClient)
 
 macro(set_option option help value)
     option(${option} ${help} ${value})
     if(${option})
         message(STATUS "${option}: ON")
-        target_compile_definitions(TracyClient PUBLIC ${option})
     else()
         message(STATUS "${option}: OFF")
     endif()
 endmacro()
 
+if(${BUILD_SHARED_LIBS})
+        set(DEFAULT_STATIC OFF)
+else()
+	set(DEFAULT_STATIC ON)
+endif()
+
+set_option(TRACY_STATIC "Whether to build Tracy as a static library" ${DEFAULT_STATIC})
 set_option(TRACY_ENABLE "Enable profiling" ON)
 set_option(TRACY_ON_DEMAND "On-demand profiling" OFF)
 set_option(TRACY_CALLSTACK "Enforce callstack collection for tracy regions" OFF)
@@ -88,15 +56,16 @@ set_option(TRACY_LIBUNWIND_BACKTRACE "Use libunwind backtracing where supported"
 set_option(TRACY_SYMBOL_OFFLINE_RESOLVE "Instead of full runtime symbol resolution, only resolve the image path and offset to enable offline symbol resolution" OFF)
 set_option(TRACY_LIBBACKTRACE_ELF_DYNLOAD_SUPPORT "Enable libbacktrace to support dynamically loaded elfs in symbol resolution resolution after the first symbol resolve operation" OFF)
 
-if(NOT TRACY_STATIC)
-    target_compile_definitions(TracyClient PRIVATE TRACY_EXPORTS)
-    target_compile_definitions(TracyClient PUBLIC TRACY_IMPORTS)
-endif()
+set_option(TRACY_WITH_EXECUTABLES "Also include the Tracy executables in this build. See the cmd/* folders" OFF)
+
+add_subdirectory(vendor)
+add_subdirectory(public)
+add_subdirectory(server)
+add_subdirectory(cmd)
+add_subdirectory(examples)
 
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
-
-set_target_properties(TracyClient PROPERTIES VERSION ${PROJECT_VERSION})
 
 set(tracy_includes
     ${TRACY_PUBLIC_DIR}/tracy/TracyC.h

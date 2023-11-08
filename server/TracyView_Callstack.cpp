@@ -108,6 +108,7 @@ void View::DrawCallstackTable( uint32_t callstack, bool globalEntriesButton )
     ImGui::SameLine();
     ImGui::RadioButton( "Symbol address", &m_showCallstackFrameAddress, 2 );
 
+#ifndef TRACY_NO_STATISTICS
     if( globalEntriesButton && m_worker.AreCallstackSamplesReady() )
     {
         auto frame = m_worker.GetCallstackFrame( *cs.begin() );
@@ -127,6 +128,7 @@ void View::DrawCallstackTable( uint32_t callstack, bool globalEntriesButton )
         }
     }
     ImGui::PopStyleVar();
+#endif
 
     ImGui::Separator();
     if( ImGui::BeginTable( "##callstack", 4, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY ) )
