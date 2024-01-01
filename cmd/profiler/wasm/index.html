@@ -152,6 +152,7 @@
       Module.setStatus('Downloading...');
       window.onerror = function(event) {
         // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+        console.log(event)
         Module.setStatus('Exception thrown, see JavaScript console');
         spinnerElement.style.display = 'none';
         Module.setStatus = function(text) {
@@ -161,6 +162,6 @@
       addEventListener('resize', resizeHandler);
       resizeHandler();
     </script>
-    <script async type="text/javascript" src="Tracy-release.js"></script>
+    <script async type="text/javascript" src="tracy.js"></script>
   </body>
 </html>

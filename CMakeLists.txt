@@ -13,11 +13,13 @@ macro(set_option option help value)
     endif()
 endmacro()
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
 # use CPM to fetch dependencies
-include(CPM.cmake)
+include(cmake/CPM.cmake)
 
 # Run version helper script
-include(version.cmake)
+include(cmake/version.cmake)
 
 set(TRACY_VERSION_MAJOR ${major})
 set(TRACY_VERSION_MINOR ${minor})
@@ -32,6 +34,15 @@ if(${BUILD_SHARED_LIBS})
         set(DEFAULT_STATIC OFF)
 else()
 	set(DEFAULT_STATIC ON)
+endif()
+
+set (FORCE_TRACY_WITH_EXECUTABLES OFF)
+if (EMSCRIPTEN)
+  # We need the profiler accessible with emscripten
+  set(FORCE_TRACY_WITH_EXECUTABLES ON)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+  set(EM_COMPILE_FLAGS "-O1 -pthread -sUSE_PTHREADS=1")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EM_COMPILE_FLAGS}")
 endif()
 
 set_option(TRACY_STATIC "Whether to build Tracy as a static library" ${DEFAULT_STATIC})
@@ -60,7 +71,7 @@ set_option(TRACY_TIMER_FALLBACK "Use lower resolution timers" OFF)
 set_option(TRACY_LIBUNWIND_BACKTRACE "Use libunwind backtracing where supported" OFF)
 set_option(TRACY_SYMBOL_OFFLINE_RESOLVE "Instead of full runtime symbol resolution, only resolve the image path and offset to enable offline symbol resolution" OFF)
 set_option(TRACY_LIBBACKTRACE_ELF_DYNLOAD_SUPPORT "Enable libbacktrace to support dynamically loaded elfs in symbol resolution resolution after the first symbol resolve operation" OFF)
-set_option(TRACY_WITH_EXECUTABLES "Also include the Tracy executables in this build. See the cmd/* folders" OFF)
+set_option(TRACY_WITH_EXECUTABLES "Also include the Tracy executables in this build. See the cmd/* folders" ${FORCE_TRACY_WITH_EXECUTABLES})
 set_option(TRACY_NO_FILESELECTOR "Disable tracy file selector" OFF)
 
 add_subdirectory(vendor)

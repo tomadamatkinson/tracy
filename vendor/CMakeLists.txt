@@ -1,13 +1,19 @@
 CPMAddPackage("gh:capstone-engine/capstone#5.0.1")
 CPMAddPackage("gh:freetype/freetype#VER-2-13-2")
-CPMAddPackage("gh:glfw/glfw#3.3.9")
 
-CPMAddPackage(
-    NAME tbb
-    GITHUB_REPOSITORY oneapi-src/oneTBB
-    GIT_TAG v2021.4.1
-    OPTIONS "TBB_TEST OFF"
-)
+if (NOT EMSCRIPTEN)
+    CPMAddPackage("gh:glfw/glfw#3.3.9")
+    CPMAddPackage(
+        NAME tbb
+        GITHUB_REPOSITORY oneapi-src/oneTBB
+        GIT_TAG v2021.4.1
+        OPTIONS "TBB_TEST OFF"
+    )
+endif()
+
+if (NOT TRACY_NO_FILESELECTOR)
+    CPMAddPackage("gh:btzy/nativefiledialog-extended#v1.1.1")
+endif()
 
 find_package(freetype REQUIRED)
 
@@ -45,9 +51,8 @@ add_library(imgui_backend STATIC
     imgui_backend/imgui_impl_opengl3.cpp)
 target_link_libraries(imgui_backend PUBLIC imgui glfw)
 target_include_directories(imgui_backend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${GLFW_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/imgui_backend)
-
-if (NOT TRACY_NO_FILESELECTOR)
-    CPMAddPackage("gh:btzy/nativefiledialog-extended#v1.1.1")
+if (EMSCRIPTEN)
+    target_compile_definitions(imgui_backend PUBLIC IMGUI_ENABLE_FREETYPE IMGUI_IMPL_OPENGL_ES2)
 endif()
 
 # Static declarations to vendors are required as these vendors have been modified to fit the needs of this project.

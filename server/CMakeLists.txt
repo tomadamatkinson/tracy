@@ -59,6 +59,7 @@ set(TRACY_SERVER_FILES
     TracyView_Options.cpp
 )
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # Tracy Server
@@ -69,10 +70,12 @@ target_link_libraries(TracyServer PUBLIC
     imgui
     imgui_backend
     zstd
-    nfd
     capstone
-    tbb
-    ${CMAKE_THREAD_LIBS_INIT})
+    Threads::Threads)
+
+if (NOT EMSCRIPTEN)
+    target_link_libraries(TracyServer PUBLIC tbb nfd)
+endif()
 
 set(TRACY_NO_STATS_FILES
     TracyPrint.cpp
@@ -92,13 +95,15 @@ target_link_libraries(TracyServerNoStatistics PUBLIC
     imgui
     imgui_backend
     zstd
-    nfd
     capstone
-    tbb
-    ${CMAKE_THREAD_LIBS_INIT})
+    Threads::Threads)
 target_compile_definitions(TracyServerNoStatistics PUBLIC TRACY_ENABLE=0 TRACY_NO_STATISTICS=1)
 
-if (WIN32)
+if (WIN32 AND NOT EMSCRIPTEN)
     target_link_libraries(TracyServer PUBLIC wsock32 ws2_32)
     target_link_libraries(TracyServerNoStatistics PUBLIC wsock32 ws2_32)
+endif()
+
+if (NOT EMSCRIPTEN)
+    target_link_libraries(TracyServerNoStatistics PUBLIC tbb nfd)
 endif()
