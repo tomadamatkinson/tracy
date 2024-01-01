@@ -1,6 +1,6 @@
 CPMAddPackage("gh:capstone-engine/capstone#5.0.1")
 CPMAddPackage("gh:freetype/freetype#VER-2-13-2")
-CPMAddPackage("gh:glfw/glfw#3.3.4")
+CPMAddPackage("gh:glfw/glfw#3.3.9")
 
 CPMAddPackage(
     NAME tbb
