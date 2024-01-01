@@ -82,6 +82,7 @@ add_subdirectory(server)
 if (TRACY_WITH_EXECUTABLES)
         add_subdirectory(cmd)
 endif()
+add_subdirectory(test)
 
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)

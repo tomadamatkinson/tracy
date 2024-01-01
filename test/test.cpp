@@ -2,8 +2,8 @@
 #include <mutex>
 #include <thread>
 #include <stdlib.h>
-#include "Tracy.hpp"
-#include "../common/TracySystem.hpp"
+#include "tracy/Tracy.hpp"
+#include "common/TracySystem.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_JPEG

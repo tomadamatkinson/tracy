@@ -22,3 +22,4 @@ target_link_libraries(profiler PUBLIC
     imgui_backend
     nfd)
 target_compile_definitions(profiler PUBLIC IMGUI_ENABLE_FREETYPE)
+set_target_properties(profiler PROPERTIES OUTPUT_NAME "tracy")
