@@ -60,9 +60,6 @@ set(TRACY_SERVER_FILES
 )
 
 find_package(Threads REQUIRED)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(CAPSTONE REQUIRED IMPORTED_TARGET capstone)
-pkg_check_modules(TBB REQUIRED IMPORTED_TARGET tbb)
 
 # Tracy Server
 add_library(TracyServer STATIC ${TRACY_SERVER_FILES})
@@ -73,8 +70,8 @@ target_link_libraries(TracyServer PUBLIC
     imgui_backend
     zstd
     nfd
-    PkgConfig::CAPSTONE
-    PkgConfig::TBB
+    capstone
+    tbb
     ${CMAKE_THREAD_LIBS_INIT})
 
 set(TRACY_NO_STATS_FILES
@@ -96,8 +93,8 @@ target_link_libraries(TracyServerNoStatistics PUBLIC
     imgui_backend
     zstd
     nfd
-    PkgConfig::CAPSTONE
-    PkgConfig::TBB
+    capstone
+    tbb
     ${CMAKE_THREAD_LIBS_INIT})
 target_compile_definitions(TracyServerNoStatistics PUBLIC TRACY_ENABLE=0 TRACY_NO_STATISTICS=1)
 

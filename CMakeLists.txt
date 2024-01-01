@@ -13,22 +13,7 @@ macro(set_option option help value)
     endif()
 endmacro()
 
-set_option(TRACY_WITH_EXECUTABLES "Also include the Tracy executables in this build. See the cmd/* folders" OFF)
-set_option(TRACY_NO_FILESELECTOR "Disable tracy file selector" OFF)
-
-if (TRACY_WITH_EXECUTABLES)
-        set(VCPKG_MANIFEST_FEATURES "executables")
-endif()
-
-if (NOT TRACY_NO_FILESELECTOR)
-        set(VCPKG_MANIFEST_FEATURES "${VCPKG_MANIFEST_FEATURES};file-selector")
-endif()
-
-# Prefer vcpkg for dependencies
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Always export compile commands (most IDEs / editors use this for linting)
-
-# Fallback to CPM if vcpkg is not available
+# use CPM to fetch dependencies
 include(CPM.cmake)
 
 # Run version helper script
@@ -75,6 +60,8 @@ set_option(TRACY_TIMER_FALLBACK "Use lower resolution timers" OFF)
 set_option(TRACY_LIBUNWIND_BACKTRACE "Use libunwind backtracing where supported" OFF)
 set_option(TRACY_SYMBOL_OFFLINE_RESOLVE "Instead of full runtime symbol resolution, only resolve the image path and offset to enable offline symbol resolution" OFF)
 set_option(TRACY_LIBBACKTRACE_ELF_DYNLOAD_SUPPORT "Enable libbacktrace to support dynamically loaded elfs in symbol resolution resolution after the first symbol resolve operation" OFF)
+set_option(TRACY_WITH_EXECUTABLES "Also include the Tracy executables in this build. See the cmd/* folders" OFF)
+set_option(TRACY_NO_FILESELECTOR "Disable tracy file selector" OFF)
 
 add_subdirectory(vendor)
 add_subdirectory(public)
