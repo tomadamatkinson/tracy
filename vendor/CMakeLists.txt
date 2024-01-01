@@ -40,7 +40,7 @@ target_link_libraries(imgui_backend PUBLIC imgui glfw)
 target_include_directories(imgui_backend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${GLFW_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/imgui_backend)
 
 if (NOT TRACY_NO_FILESELECTOR)
-    add_subdirectory(nfd)
+    CPMAddPackage("gh:btzy/nativefiledialog-extended#v1.1.1")
 endif()
 
 # Static declarations to vendors are required as these vendors have been modified to fit the needs of this project.
