@@ -62,7 +62,6 @@ add_subdirectory(vendor)
 add_subdirectory(public)
 add_subdirectory(server)
 add_subdirectory(cmd)
-add_subdirectory(examples)
 
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)

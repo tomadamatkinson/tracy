@@ -3,8 +3,8 @@
 #include <thread>
 #include <unistd.h>
 
-#include "Tracy.hpp"
-#include "TracyC.h"
+#include "tracy/Tracy.hpp"
+#include "tracy/TracyC.h"
 
 const char* fiber = "job1";
 TracyCZoneCtx zone;
