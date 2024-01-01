@@ -22,10 +22,6 @@ add_library(getopt STATIC getopt/getopt.c)
 target_include_directories(getopt PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/getopt)
 set_target_properties(getopt PROPERTIES LINKER_LANGUAGE C)
 
-# Static declarations to vendors are required as these vendors have been modified to fit the needs of this project.
-# https://github.com/ocornut/imgui
-find_package(glfw3 CONFIG REQUIRED)
-
 set(IMGUI_FILES
     imgui/imgui_draw.cpp
     imgui/imgui_tables.cpp
