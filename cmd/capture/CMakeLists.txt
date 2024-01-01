@@ -3,3 +3,5 @@ target_link_libraries(capture PUBLIC
     TracyServerNoStatistics
     getopt)
 target_compile_definitions(capture PUBLIC TRACY_NO_STATISTICS=1)
+
+tracy__configure_target(capture)

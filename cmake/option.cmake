@@ -1,0 +1,8 @@
+macro(set_option option help value)
+    option(${option} ${help} ${value})
+    if(${option})
+        message(STATUS "${option}: ON")
+    else()
+        message(STATUS "${option}: OFF")
+    endif()
+endmacro()

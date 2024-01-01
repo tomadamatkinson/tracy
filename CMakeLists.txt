@@ -4,22 +4,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_compile_definitions(NOMINMAX)
 
-macro(set_option option help value)
-    option(${option} ${help} ${value})
-    if(${option})
-        message(STATUS "${option}: ON")
-    else()
-        message(STATUS "${option}: OFF")
-    endif()
-endmacro()
-
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-
-# use CPM to fetch dependencies
 include(cmake/CPM.cmake)
-
-# Run version helper script
 include(cmake/version.cmake)
+include(cmake/target.cmake)
+include(cmake/option.cmake)
 
 set(TRACY_VERSION_MAJOR ${major})
 set(TRACY_VERSION_MINOR ${minor})

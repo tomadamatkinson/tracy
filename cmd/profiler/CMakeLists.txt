@@ -24,13 +24,16 @@ target_compile_definitions(profiler PUBLIC IMGUI_ENABLE_FREETYPE)
 set_target_properties(profiler PROPERTIES OUTPUT_NAME "tracy")
 
 if (EMSCRIPTEN)
-    file(COPY wasm/httpd.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    file(COPY wasm/index.html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/embed.tracy
-        COMMAND wget "https://share.nereid.pl/i/embed.tracy" -O ${CMAKE_CURRENT_BINARY_DIR}/embed.tracy
+    set(WASM_TARGET_DIR ${CMAKE_BINARY_DIR}/bin)
+    file(COPY wasm/httpd.py DESTINATION ${WASM_TARGET_DIR})
+    file(COPY wasm/index.html DESTINATION ${WASM_TARGET_DIR})
+    add_custom_command(OUTPUT ${WASM_TARGET_DIR}/embed.tracy
+        COMMAND wget "https://share.nereid.pl/i/embed.tracy" -O ${WASM_TARGET_DIR}/embed.tracy
     )
-    add_custom_target(embed_tracy ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/embed.tracy)
+    add_custom_target(embed_tracy ALL DEPENDS ${WASM_TARGET_DIR}/embed.tracy)
     add_dependencies(profiler embed_tracy)
-    set(EM_LINK_FLAGS "-pthread -sUSE_PTHREADS=1 -sUSE_GLFW=3 -sINITIAL_MEMORY=384mb -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=4gb -sWASM_BIGINT=1 -sPTHREAD_POOL_SIZE=4 -sEXPORTED_FUNCTIONS=_main,_nativeResize,_nativeOpenFile -sEXPORTED_RUNTIME_METHODS=ccall -sENVIRONMENT=web,worker -sASSERTIONS=1 --preload-file ${CMAKE_CURRENT_BINARY_DIR}/embed.tracy@embed.tracy")
+    set(EM_LINK_FLAGS "-pthread -sUSE_PTHREADS=1 -sUSE_GLFW=3 -sINITIAL_MEMORY=384mb -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=4gb -sWASM_BIGINT=1 -sPTHREAD_POOL_SIZE=4 -sEXPORTED_FUNCTIONS=_main,_nativeResize,_nativeOpenFile -sEXPORTED_RUNTIME_METHODS=ccall -sENVIRONMENT=web,worker -sASSERTIONS=1 --preload-file ${CMAKE_BINARY_DIR}/bin/embed.tracy@embed.tracy")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${EM_LINK_FLAGS}")
  endif()
+
+tracy__configure_target(profiler)

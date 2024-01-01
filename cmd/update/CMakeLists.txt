@@ -8,9 +8,11 @@ set(UPDATE_SOURCES
 
 add_executable(update ${UPDATE_SOURCES})
 target_link_libraries(update PUBLIC
-    TracyServer
+    TracyServerNoStatistics
     getopt)
 
 if (WIN32)
     target_link_libraries(update PUBLIC dbghelp)
 endif()
+
+tracy__configure_target(update)

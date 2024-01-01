@@ -33,7 +33,10 @@ vcpkg/*
 /vcpkg_installed
 .deps/
 .dirstamp
-.vscode/
+
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
 
 /_*/**
 /**/__pycache__/**

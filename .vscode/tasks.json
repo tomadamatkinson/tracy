@@ -1,0 +1,110 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Configure",
+      "type": "shell",
+      "command": "cmake -Bbuild/native -S. -DCMAKE_BUILD_TYPE=Debug -DTRACY_WITH_EXECUTABLES=ON"
+    },
+
+    {
+      "label": "Build Profiler GUI",
+      "type": "shell",
+      "command": "cmake --build build/native --config Debug --target profiler --  -j `nproc`",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build capture tool",
+      "type": "shell",
+      "command": "cmake --build build/native --config Debug --target capture -- -j `nproc`",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build csvexport tool",
+      "type": "shell",
+      "command": "cmake --build build/native --config Debug --target csvexport -- -j `nproc`",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build import-chrome tool",
+      "type": "shell",
+      "command": "cmake --build build/native --config Debug --target import-chrome -- -j `nproc`",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build update tool",
+      "type": "shell",
+      "command": "cmake --build build/native --config Debug --target update -- -j `nproc`",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build client library",
+      "type": "shell",
+      "command": "cmake --build build/native --config Debug --target TracyClient -j `nproc`",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build test application",
+      "type": "shell",
+      "command": "cmake --build build/native --config Debug --target tracy_test -j `nproc`",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOn": ["Configure"]
+    },
+    {
+      "label": "Build All",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Build Profiler GUI",
+        "Build capture tool",
+        "Build csvexport tool",
+        "Build import-chrome tool",
+        "Build update tool",
+        "Build client library",
+        "Build test application"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build Emscripten Profiler GUI",
+      "type": "shell",
+      "command": "emcmake cmake -Bbuild/emscripten -S. -DCMAKE_BUILD_TYPE=Debug && cmake --build build/emscripten --config Debug --target profiler -- -j `nproc`",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
+
