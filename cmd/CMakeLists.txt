@@ -1,3 +1,6 @@
 add_subdirectory(capture)
+add_subdirectory(csvexport)
 add_subdirectory(import-chrome)
+add_subdirectory(import-fuchsia)
 add_subdirectory(profiler)
+add_subdirectory(update)

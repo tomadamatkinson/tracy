@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
+# Prefer vcpkg for dependencies
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Always export compile commands (most IDEs / editors use this for linting)
+
+# Fallback to CPM if vcpkg is not available
 include(CPM.cmake)
 
 # Run version helper script

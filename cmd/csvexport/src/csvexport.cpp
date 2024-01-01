@@ -13,9 +13,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "../../server/TracyFileRead.hpp"
-#include "../../server/TracyWorker.hpp"
-#include "../../getopt/getopt.h"
+#include "server/TracyFileRead.hpp"
+#include "server/TracyWorker.hpp"
+#include "getopt/getopt.h"
 
 void print_usage_exit(int e)
 {

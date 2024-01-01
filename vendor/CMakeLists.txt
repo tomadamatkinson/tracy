@@ -1,7 +1,5 @@
-
-CPMAddPackage("gh:glfw/glfw#3.3.8")
-CPMAddPackage("gh:capstone-engine/capstone#4.0.1")
-CPMAddPackage("gh:freetype/freetype#VER-2-13-2")
+find_package(capstone REQUIRED)
+find_package(freetype REQUIRED)
 
 # Static declarations to vendors are required as these vendors have been modified to fit the needs of this project.
 # https://github.com/cubicdaiya/dtl
