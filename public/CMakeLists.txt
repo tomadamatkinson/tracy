@@ -6,7 +6,6 @@ else()
 endif()
 
 add_library(TracyClient ${TRACY_VISIBILITY} "${TRACY_PUBLIC_DIR}/TracyClient.cpp")
-target_compile_features(TracyClient PUBLIC cxx_std_11)
 target_include_directories(TracyClient SYSTEM PUBLIC
     $<BUILD_INTERFACE:${TRACY_PUBLIC_DIR}>
     $<INSTALL_INTERFACE:include>)
@@ -78,7 +77,6 @@ set(TRACY_FILES
 )
 
 add_library(TracyClientServerInterface STATIC ${TRACY_FILES})
-target_compile_features(TracyClientServerInterface PUBLIC cxx_std_11)
 target_include_directories(TracyClientServerInterface SYSTEM PUBLIC
     $<BUILD_INTERFACE:${TRACY_PUBLIC_DIR}>
     $<INSTALL_INTERFACE:include>)

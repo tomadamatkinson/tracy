@@ -19,6 +19,6 @@ add_executable(profiler ${PROFILER_SOURCES})
 target_link_libraries(profiler PUBLIC
     TracyServer
     getopt
-    glfw
+    imgui_backend
     nfd)
 target_compile_definitions(profiler PUBLIC IMGUI_ENABLE_FREETYPE)

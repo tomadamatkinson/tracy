@@ -10,3 +10,7 @@ add_executable(update ${UPDATE_SOURCES})
 target_link_libraries(update PUBLIC
     TracyServer
     getopt)
+
+if (WIN32)
+    target_link_libraries(update PUBLIC dbghelp)
+endif()

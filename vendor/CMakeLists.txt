@@ -1,4 +1,3 @@
-find_package(capstone REQUIRED)
 find_package(freetype REQUIRED)
 
 # Static declarations to vendors are required as these vendors have been modified to fit the needs of this project.
@@ -14,36 +13,35 @@ set_target_properties(getopt PROPERTIES LINKER_LANGUAGE C)
 
 # Static declarations to vendors are required as these vendors have been modified to fit the needs of this project.
 # https://github.com/ocornut/imgui
-set(IMGUI_FILES
-    imgui/misc/freetype/imgui_freetype.cpp
+find_package(glfw3 CONFIG REQUIRED)
 
+set(IMGUI_FILES
     imgui/imgui_draw.cpp
     imgui/imgui_tables.cpp
     imgui/imgui_widgets.cpp
     imgui/imgui.cpp
 )
+
+if (IMGUI_ENABLE_FREETYPE)
+    list(APPEND IMGUI_FILES imgui/misc/freetype/imgui_freetype.cpp)
+endif()
+
 add_library(imgui STATIC ${IMGUI_FILES})
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
-target_link_libraries(imgui PUBLIC freetype)
+
+if (IMGUI_ENABLE_FREETYPE)
+    target_link_libraries(imgui PUBLIC freetype)
+endif()
 
 add_library(imgui_backend STATIC 
     imgui_backend/imgui_impl_glfw.cpp
     imgui_backend/imgui_impl_opengl3.cpp)
 target_link_libraries(imgui_backend PUBLIC imgui glfw)
-target_include_directories(imgui_backend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/imgui_backend)
+target_include_directories(imgui_backend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${GLFW_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/imgui_backend)
 
-# Static declarations to vendors are required as these vendors have been modified to fit the needs of this project.
-# https://github.com/btzy/nativefiledialog-extended
-find_package(PkgConfig)
-pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-
-set(NFD_FILES
-    nfd/nfd_gtk.cpp
-    nfd/nfd_portal.cpp
-)
-add_library(nfd STATIC ${NFD_FILES})
-target_include_directories(nfd PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/nfd ${GTK3_INCLUDE_DIRS})
-target_link_libraries(nfd PUBLIC ${GTK3_LIBRARIES})
+if (NOT TRACY_NO_FILESELECTOR)
+    add_subdirectory(nfd)
+endif()
 
 # Static declarations to vendors are required as these vendors have been modified to fit the needs of this project.
 # https://github.com/facebook/zstd
