@@ -8,7 +8,7 @@ set(UPDATE_SOURCES
 
 add_executable(update ${UPDATE_SOURCES})
 target_link_libraries(update PUBLIC
-    TracyServerNoStatistics
+    TracyServer # No stats set by TRACY_BUILD_TARGET_UTILS
     getopt)
 
 if (WIN32)

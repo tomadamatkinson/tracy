@@ -59,30 +59,6 @@ set(TRACY_SERVER_FILES
     TracyView_Options.cpp
 )
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-
-if (${CAPSTONE_INCLUDE_DIRS} STREQUAL "/usr/include/capstone")
-    # In source we use <capstone/capstone.h>
-    # This is a workaround for capstone installations that pass -I/usr/include/capstone to the compiler
-    list(APPEND CAPSTONE_INCLUDE_DIRS "/usr/include")
-endif()
-
-# Tracy Server
-add_library(TracyServer STATIC ${TRACY_SERVER_FILES})
-target_include_directories(TracyServer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CAPSTONE_INCLUDE_DIRS})
-target_link_libraries(TracyServer PUBLIC
-    TracyClientServerInterface
-    imgui
-    imgui_backend
-    zstd
-    ${CAPSTONE_LIBRARIES}
-    Threads::Threads)
-
-if (NOT EMSCRIPTEN)
-    target_link_libraries(TracyServer PUBLIC tbb nfd)
-endif()
-
 set(TRACY_NO_STATS_FILES
     TracyPrint.cpp
     TracyWorker.cpp
@@ -93,23 +69,44 @@ set(TRACY_NO_STATS_FILES
     TracyMmap.cpp
 )
 
-# Tracy Server without statistics
-add_library(TracyServerNoStatistics STATIC ${TRACY_NO_STATS_FILES})
-target_include_directories(TracyServerNoStatistics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CAPSTONE_INCLUDE_DIRS})
-target_link_libraries(TracyServerNoStatistics PUBLIC
-    TracyClientServerInterface
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
+if (${CAPSTONE_INCLUDE_DIRS} STREQUAL "/usr/include/capstone")
+    # In source we use <capstone/capstone.h>
+    # This is a workaround for capstone installations that pass -I/usr/include/capstone to the compiler
+    list(APPEND CAPSTONE_INCLUDE_DIRS "/usr/include")
+endif()
+
+# Utils do not need stats
+if (TRACY_BUILD_TARGET_UTILS)
+    set(TRACY_SERVER_SOURCE ${TRACY_NO_STATS_FILES})
+else()
+    set(TRACY_SERVER_SOURCE ${TRACY_SERVER_FILES})
+endif()
+
+# Tracy Server
+add_library(TracyServer STATIC ${TRACY_SERVER_SOURCE})
+target_include_directories(TracyServer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CAPSTONE_INCLUDE_DIRS})
+target_link_libraries(TracyServer PUBLIC
+    TracyClient
     imgui
     imgui_backend
     zstd
     ${CAPSTONE_LIBRARIES}
     Threads::Threads)
-target_compile_definitions(TracyServerNoStatistics PUBLIC TRACY_ENABLE=0 TRACY_NO_STATISTICS=1)
 
+# Force windows to link incase not using MSVC
 if (WIN32 AND NOT EMSCRIPTEN)
     target_link_libraries(TracyServer PUBLIC wsock32 ws2_32)
-    target_link_libraries(TracyServerNoStatistics PUBLIC wsock32 ws2_32)
 endif()
 
 if (NOT EMSCRIPTEN)
-    target_link_libraries(TracyServerNoStatistics PUBLIC tbb nfd)
+    target_link_libraries(TracyServer PUBLIC tbb nfd)
 endif()
+
+# Utils do not need stats
+if (TRACY_BUILD_TARGET_UTILS)
+    target_compile_definitions(TracyServer PUBLIC TRACY_ENABLE=0 TRACY_NO_STATISTICS=1)
+endif()
+

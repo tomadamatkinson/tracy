@@ -54,7 +54,7 @@ jobs:
       ## Configure
       - name: Configure
         run: |
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_WITH_EXECUTABLES=ON
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }}
 
       ## Build
       - name: Profiler GUI

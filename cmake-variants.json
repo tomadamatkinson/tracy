@@ -1,0 +1,63 @@
+{
+  "buildType": {
+    "default": "debug",
+    "choices": {
+      "debug": {
+        "short": "Debug",
+        "long": "Build with debug symbols",
+        "buildType": "Debug"
+      },
+      "release": {
+        "short": "Release",
+        "long": "Build with optimizations",
+        "buildType": "Release"
+      },
+      "reldeb": {
+        "short": "RelDeb",
+        "long": "Build with optimizations and debug symbols",
+        "buildType": "RelWithDebInfo"
+      }
+    }
+  },
+  "linkage": {
+    "default": "static",
+    "choices": {
+      "static": {
+        "short": "Static",
+        "long": "Build static libraries",
+        "linkage": "static"
+      },
+      "shared": {
+        "short": "Shared",
+        "long": "Build shared libraries",
+        "linkage": "shared"
+      }
+    }
+  },
+  "tracyBuildTarget": {
+    "default": "client",
+    "choices": {
+      "profiler": {
+        "short": "Profiler",
+        "long": "Build Tracy Profiler",
+        "settings": {
+          "TRACY_BUILD_TARGET": "PROFILER"
+        }
+      },
+      "client": {
+        "short": "Client",
+        "long": "Build Tracy Client",
+        "settings": {
+          "TRACY_BUILD_TARGET": "CLIENT"
+        }
+      },
+      "util": {
+        "short": "Utilities",
+        "long": "Build Tracy Command Line Utilities",
+        "settings": {
+          "TRACY_BUILD_TARGET": "UTIL"
+        }
+      }
+    }
+  }
+}

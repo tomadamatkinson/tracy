@@ -24,17 +24,37 @@ else()
 	set(DEFAULT_STATIC ON)
 endif()
 
-set (FORCE_TRACY_WITH_EXECUTABLES OFF)
 if (EMSCRIPTEN)
   # We need the profiler accessible with emscripten
-  set(FORCE_TRACY_WITH_EXECUTABLES ON)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
   set(EM_COMPILE_FLAGS "-O1 -pthread -sUSE_PTHREADS=1")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EM_COMPILE_FLAGS}")
 endif()
 
+
+# Tracy can be built in three different ways:
+# - PROFILER: The profiler executable, the profiler
+# - UTILS:    The utilities, a set of command line tools
+# - CLIENT:   The client library, which is linked into the target application
+set(TRACY_BUILD_TARGET "CLIENT" CACHE STRING "Sets the build target 'PROFILER', 'CLIENT' or 'UTILS'")
+
+if (${TRACY_BUILD_TARGET} STREQUAL "PROFILER")
+        set(TRACY_BUILD_TARGET_PROFILER ON)
+        set(DEFAULT_TRACY_ENABLE OFF)
+elseif (${TRACY_BUILD_TARGET} STREQUAL "CLIENT")
+        set(TRACY_BUILD_TARGET_CLIENT ON)
+        set(DEFAULT_TRACY_ENABLE ON)
+elseif (${TRACY_BUILD_TARGET} STREQUAL "UTILS")
+        set(TRACY_BUILD_TARGET_UTILS ON)
+        set(DEFAULT_TRACY_ENABLE OFF)
+else()
+        message(FATAL_ERROR "Invalid build target '${TRACY_BUILD_TARGET}'")
+endif()
+
+message(STATUS "Selected Tracy build target: ${TRACY_BUILD_TARGET}")
+
 set_option(TRACY_STATIC "Whether to build Tracy as a static library" ${DEFAULT_STATIC})
-set_option(TRACY_ENABLE "Enable profiling" ON)
+set_option(TRACY_ENABLE "Enable profiling" ${DEFAULT_TRACY_ENABLE})
 set_option(TRACY_ON_DEMAND "On-demand profiling" OFF)
 set_option(TRACY_CALLSTACK "Enforce callstack collection for tracy regions" OFF)
 set_option(TRACY_NO_CALLSTACK "Disable all callstack related functionality" OFF)
@@ -59,16 +79,12 @@ set_option(TRACY_TIMER_FALLBACK "Use lower resolution timers" OFF)
 set_option(TRACY_LIBUNWIND_BACKTRACE "Use libunwind backtracing where supported" OFF)
 set_option(TRACY_SYMBOL_OFFLINE_RESOLVE "Instead of full runtime symbol resolution, only resolve the image path and offset to enable offline symbol resolution" OFF)
 set_option(TRACY_LIBBACKTRACE_ELF_DYNLOAD_SUPPORT "Enable libbacktrace to support dynamically loaded elfs in symbol resolution resolution after the first symbol resolve operation" OFF)
-set_option(TRACY_WITH_EXECUTABLES "Also include the Tracy executables in this build. See the cmd/* folders" ${FORCE_TRACY_WITH_EXECUTABLES})
-set_option(TRACY_NO_FILESELECTOR "Disable tracy file selector" OFF)
 set_option(TRACY_FORCE_FETCH_DEPENDENCIES "Force fetching dependencies, if OFF dependencies will be resolved from the system first" OFF)
 
 add_subdirectory(vendor)
 add_subdirectory(public)
 add_subdirectory(server)
-if (TRACY_WITH_EXECUTABLES)
-        add_subdirectory(cmd)
-endif()
+add_subdirectory(cmd)
 add_subdirectory(test)
 
 include(CMakePackageConfigHelpers)

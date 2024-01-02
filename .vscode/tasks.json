@@ -6,7 +6,7 @@
     {
       "label": "Configure",
       "type": "shell",
-      "command": "cmake -Bbuild/native -S. -DCMAKE_BUILD_TYPE=Debug -DTRACY_WITH_EXECUTABLES=ON"
+      "command": "cmake -Bbuild/native -S. -DCMAKE_BUILD_TYPE=Debug"
     },
 
     {
