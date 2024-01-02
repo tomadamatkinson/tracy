@@ -62,15 +62,21 @@ set(TRACY_SERVER_FILES
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+if (${CAPSTONE_INCLUDE_DIRS} STREQUAL "/usr/include/capstone")
+    # In source we use <capstone/capstone.h>
+    # This is a workaround for capstone installations that pass -I/usr/include/capstone to the compiler
+    list(APPEND CAPSTONE_INCLUDE_DIRS "/usr/include")
+endif()
+
 # Tracy Server
 add_library(TracyServer STATIC ${TRACY_SERVER_FILES})
-target_include_directories(TracyServer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_include_directories(TracyServer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CAPSTONE_INCLUDE_DIRS})
 target_link_libraries(TracyServer PUBLIC
     TracyClientServerInterface
     imgui
     imgui_backend
     zstd
-    capstone
+    ${CAPSTONE_LIBRARIES}
     Threads::Threads)
 
 if (NOT EMSCRIPTEN)
@@ -89,13 +95,13 @@ set(TRACY_NO_STATS_FILES
 
 # Tracy Server without statistics
 add_library(TracyServerNoStatistics STATIC ${TRACY_NO_STATS_FILES})
-target_include_directories(TracyServerNoStatistics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_include_directories(TracyServerNoStatistics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CAPSTONE_INCLUDE_DIRS})
 target_link_libraries(TracyServerNoStatistics PUBLIC
     TracyClientServerInterface
     imgui
     imgui_backend
     zstd
-    capstone
+    ${CAPSTONE_LIBRARIES}
     Threads::Threads)
 target_compile_definitions(TracyServerNoStatistics PUBLIC TRACY_ENABLE=0 TRACY_NO_STATISTICS=1)
 
