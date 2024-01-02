@@ -1,0 +1,90 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }} ${{ matrix.config }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022, macos-latest]
+        config: [Debug, Release]
+
+    env:
+      parallel: ${{ matrix.os == 'windows-2022' && '--parallel' || '-- -j`nproc`' }}
+      meson-backend: ${{ matrix.os == 'windows-2022' && 'vs' || 'ninja' }}
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies with Pip
+        run: |
+          pip3 install --user meson ninja
+
+      - uses: microsoft/setup-msbuild@v1.0.2
+        if: matrix.os == 'windows-2022'
+
+      ## Install required libraries
+      - name: Install linux libraries
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get install -y pkg-config libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgtk-3-dev
+      - name: Install windows libraries
+        if: matrix.os == 'windows-2022'
+        run: choco install pkgconfiglite --allow-empty-checksums
+      - name: Install macos libraries
+        if: matrix.os == 'macos-latest'
+        run: brew install pkg-config meson
+
+      ## Configure
+      - name: Configure
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_WITH_EXECUTABLES=ON
+
+      ## Build
+      - name: Profiler GUI
+        run: cmake --build build --config ${{ matrix.config }} --target profiler ${{ env.parallel }}
+      - name: Update utility
+        run: cmake --build build --config ${{ matrix.config }} --target update ${{ env.parallel }}
+      - name: Capture utility
+        run: cmake --build build --config ${{ matrix.config }} --target capture ${{ env.parallel }}
+      - name: Csvexport utility
+        run: cmake --build build --config ${{ matrix.config }} --target csvexport ${{ env.parallel }}
+      - name: Import-chrome utility
+        run: cmake --build build --config ${{ matrix.config }} --target import-chrome ${{ env.parallel }}
+      - name: Import-fuchsia utility
+        run: cmake --build build --config ${{ matrix.config }} --target import-fuchsia ${{ env.parallel }}
+      - name: Library
+        run: cmake --build build --config ${{ matrix.config }} --target TracyClient ${{ env.parallel }}
+
+      - name: Library (meson)
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/install
+          meson setup --prefix ${GITHUB_WORKSPACE}/install --backend ${{ env.meson-backend  }} build
+          meson compile -C build
+          meson install -C build
+
+      - name: Package binaries
+        if: matrix.config == 'Release'
+        run: |
+          7z a Tracy-${{ matrix.os }}.7z build/bin
+      - uses: actions/upload-artifact@v4
+        if: matrix.config == 'Release'
+        with:
+          name: Tracy-${{ matrix.os }}
+          path: Tracy-${{ matrix.os }}.7z
