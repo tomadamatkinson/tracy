@@ -1,8 +1,45 @@
-CPMAddPackage("gh:capstone-engine/capstone#5.0.1")
-CPMAddPackage("gh:freetype/freetype#VER-2-13-2")
+include(FindPkgConfig)
 
-if (NOT EMSCRIPTEN)
+if (NOT PKG_CONFIG_FOUND)
+    message(WARN "pkg-config not found, forcing fetch of dependencies")
+endif()
+
+# Determin which dependencies need to be fetched
+if (TRACY_FORCE_FETCH_DEPENDENCIES OR NOT PKG_CONFIG_FOUND)
+    set(PULL_CAPSTONE ON)
+    set(PULL_FREETYPE ON)
+    set(PULL_GLFW ON)
+    set(PULL_TBB ON)
+else()
+    macro(find_or_fetch pkg_alias pkg_name)
+    # Check for system dependencies first
+        pkg_check_modules(${pkg_alias} ${pkg_name})
+        if (NOT ${pkg_alias}_FOUND)
+            set(PULL_${pkg_alias} ON)
+        else()
+            message(STATUS "Using system ${pkg_name} ${${pkg_alias}_VERSION}")
+        endif()
+    endmacro()
+
+    find_or_fetch(CAPSTONE capstone)
+    find_or_fetch(FREETYPE freetype2)
+    find_or_fetch(GLFW glfw3)
+    find_or_fetch(TBB tbb)
+endif()
+
+if (PULL_CAPSTONE)
+    CPMAddPackage("gh:capstone-engine/capstone#5.0.1")
+endif()
+
+if (PULL_FREETYPE)
+    CPMAddPackage("gh:freetype/freetype#VER-2-13-2")
+endif()
+
+if (NOT EMSCRIPTEN AND PULL_GLFW)
     CPMAddPackage("gh:glfw/glfw#3.3.9")
+endif()
+
+if (NOT EMSCRIPTEN AND UNIX AND PULL_TBB)
     CPMAddPackage(
         NAME tbb
         GITHUB_REPOSITORY oneapi-src/oneTBB
@@ -11,11 +48,7 @@ if (NOT EMSCRIPTEN)
     )
 endif()
 
-if (NOT TRACY_NO_FILESELECTOR)
-    CPMAddPackage("gh:btzy/nativefiledialog-extended#v1.1.1")
-endif()
-
-find_package(freetype REQUIRED)
+CPMAddPackage("gh:btzy/nativefiledialog-extended#v1.1.1")
 
 # Static declarations to vendors are required as these vendors have been modified to fit the needs of this project.
 # https://github.com/cubicdaiya/dtl

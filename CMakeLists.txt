@@ -61,6 +61,7 @@ set_option(TRACY_SYMBOL_OFFLINE_RESOLVE "Instead of full runtime symbol resoluti
 set_option(TRACY_LIBBACKTRACE_ELF_DYNLOAD_SUPPORT "Enable libbacktrace to support dynamically loaded elfs in symbol resolution resolution after the first symbol resolve operation" OFF)
 set_option(TRACY_WITH_EXECUTABLES "Also include the Tracy executables in this build. See the cmd/* folders" ${FORCE_TRACY_WITH_EXECUTABLES})
 set_option(TRACY_NO_FILESELECTOR "Disable tracy file selector" OFF)
+set_option(TRACY_FORCE_FETCH_DEPENDENCIES "Force fetching dependencies, if OFF dependencies will be resolved from the system first" OFF)
 
 add_subdirectory(vendor)
 add_subdirectory(public)
