@@ -55,7 +55,7 @@
         "short": "Utilities",
         "long": "Build Tracy Command Line Utilities",
         "settings": {
-          "TRACY_BUILD_TARGET": "UTIL"
+          "TRACY_BUILD_TARGET": "UTILS"
         }
       }
     }
