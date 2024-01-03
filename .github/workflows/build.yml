@@ -54,23 +54,28 @@ jobs:
       ## Configure
       - name: Configure
         run: |
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+          cmake -B build/profiler -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_BUILD_TYPE=PROFILER
+          cmake -B build/client -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_BUILD_TYPE=CLIENT
+          cmake -B build/utils -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_BUILD_TYPE=UTILS
 
       ## Build
       - name: Profiler GUI
-        run: cmake --build build --config ${{ matrix.config }} --target profiler ${{ env.parallel }}
+        run: cmake --build build/profiler --config ${{ matrix.config }} --target profiler ${{ env.parallel }}
       - name: Update utility
-        run: cmake --build build --config ${{ matrix.config }} --target update ${{ env.parallel }}
+        run: cmake --build build/utils --config ${{ matrix.config }} --target update ${{ env.parallel }}
       - name: Capture utility
-        run: cmake --build build --config ${{ matrix.config }} --target capture ${{ env.parallel }}
+        run: cmake --build build/utils --config ${{ matrix.config }} --target capture ${{ env.parallel }}
       - name: Csvexport utility
-        run: cmake --build build --config ${{ matrix.config }} --target csvexport ${{ env.parallel }}
+        run: cmake --build build/profiler --config ${{ matrix.config }} --target csvexport ${{ env.parallel }}
       - name: Import-chrome utility
-        run: cmake --build build --config ${{ matrix.config }} --target import-chrome ${{ env.parallel }}
+        run: cmake --build build/utils --config ${{ matrix.config }} --target import-chrome ${{ env.parallel }}
       - name: Import-fuchsia utility
-        run: cmake --build build --config ${{ matrix.config }} --target import-fuchsia ${{ env.parallel }}
+        run: cmake --build build/utils --config ${{ matrix.config }} --target import-fuchsia ${{ env.parallel }}
       - name: Library
-        run: cmake --build build --config ${{ matrix.config }} --target TracyClient ${{ env.parallel }}
+        run: cmake --build build/client --config ${{ matrix.config }} --target TracyClient ${{ env.parallel }}
+
+      - name: Build Test
+        run: cmake --build build/client --config ${{ matrix.config }} --target tracy_test ${{ env.parallel }}
 
       - name: Library (meson)
         run: |
