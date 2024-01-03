@@ -72,18 +72,14 @@ set(TRACY_NO_STATS_FILES
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-if (${CAPSTONE_INCLUDE_DIRS} STREQUAL "/usr/include/capstone")
-    # In source we use <capstone/capstone.h>
-    # This is a workaround for capstone installations that pass -I/usr/include/capstone to the compiler
-    list(APPEND CAPSTONE_INCLUDE_DIRS "/usr/include")
-endif()
-
 # Utils do not need stats
 if (TRACY_BUILD_TARGET_UTILS)
     set(TRACY_SERVER_SOURCE ${TRACY_NO_STATS_FILES})
 else()
     set(TRACY_SERVER_SOURCE ${TRACY_SERVER_FILES})
 endif()
+
+message("CAPSTONE_LIBRARIES: ${CAPSTONE_LIBRARIES}")
 
 # Tracy Server
 add_library(TracyServer STATIC ${TRACY_SERVER_SOURCE})
@@ -102,7 +98,7 @@ if (WIN32 AND NOT EMSCRIPTEN)
 endif()
 
 if (NOT EMSCRIPTEN)
-    target_link_libraries(TracyServer PUBLIC tbb nfd)
+    target_link_libraries(TracyServer PUBLIC ${TBB_LIBRARIES} nfd)
 endif()
 
 # Utils do not need stats

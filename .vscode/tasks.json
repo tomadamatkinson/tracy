@@ -4,80 +4,90 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Configure",
+      "label": "Configure Utils",
       "type": "shell",
-      "command": "cmake -Bbuild/native -S. -DCMAKE_BUILD_TYPE=Debug"
+      "command": "cmake -Bbuild/native/utils -S. -DCMAKE_BUILD_TYPE=Debug -DTRACY_BUILD_TARGET=UTILS"
+    },
+    {
+      "label": "Configure Profiler",
+      "type": "shell",
+      "command": "cmake -Bbuild/native/profiler -S. -DCMAKE_BUILD_TYPE=Debug -DTRACY_BUILD_TARGET=PROFILER"
+    },
+    {
+      "label": "Configure Client",
+      "type": "shell",
+      "command": "cmake -Bbuild/native/client -S. -DCMAKE_BUILD_TYPE=Debug -DTRACY_BUILD_TARGET=CLIENT"
     },
 
     {
       "label": "Build Profiler GUI",
       "type": "shell",
-      "command": "cmake --build build/native --config Debug --target profiler --  -j `nproc`",
+      "command": "cmake --build build/native/profiler --config Debug --target profiler --parallel",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "dependsOn": ["Configure"]
+      "dependsOn": ["Configure Profiler"]
     },
     {
       "label": "Build capture tool",
       "type": "shell",
-      "command": "cmake --build build/native --config Debug --target capture -- -j `nproc`",
+      "command": "cmake --build build/native/utils --config Debug --target capture --parallel",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "dependsOn": ["Configure"]
+      "dependsOn": ["Configure Utils"]
     },
     {
       "label": "Build csvexport tool",
       "type": "shell",
-      "command": "cmake --build build/native --config Debug --target csvexport -- -j `nproc`",
+      "command": "cmake --build build/native/profiler --config Debug --target csvexport --parallel",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "dependsOn": ["Configure"]
+      "dependsOn": ["Configure Profiler"]
     },
     {
       "label": "Build import-chrome tool",
       "type": "shell",
-      "command": "cmake --build build/native --config Debug --target import-chrome -- -j `nproc`",
+      "command": "cmake --build build/native/utils --config Debug --target import-chrome --parallel",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "dependsOn": ["Configure"]
+      "dependsOn": ["Configure Utils"]
     },
     {
       "label": "Build update tool",
       "type": "shell",
-      "command": "cmake --build build/native --config Debug --target update -- -j `nproc`",
+      "command": "cmake --build build/native/utils --config Debug --target update --parallel",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "dependsOn": ["Configure"]
+      "dependsOn": ["Configure Utils"]
     },
     {
       "label": "Build client library",
       "type": "shell",
-      "command": "cmake --build build/native --config Debug --target TracyClient -j `nproc`",
+      "command": "cmake --build build/native/client --config Debug --target TracyClient --parallel",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "dependsOn": ["Configure"]
+      "dependsOn": ["Configure Client"]
     },
     {
       "label": "Build test application",
       "type": "shell",
-      "command": "cmake --build build/native --config Debug --target tracy_test -j `nproc`",
+      "command": "cmake --build build/native/client --config Debug --target tracy_test --parallel",
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "dependsOn": ["Configure"]
+      "dependsOn": ["Configure Client"]
     },
     {
       "label": "Build All",
@@ -99,7 +109,7 @@
     {
       "label": "Build Emscripten Profiler GUI",
       "type": "shell",
-      "command": "emcmake cmake -Bbuild/emscripten -S. -DCMAKE_BUILD_TYPE=Debug && cmake --build build/emscripten --config Debug --target profiler -- -j `nproc`",
+      "command": "emcmake cmake -Bbuild/emscripten -S. -DCMAKE_BUILD_TYPE=Debug -DTRACY_BUILD_TARGET=PROFILER && cmake --build build/emscripten --config Debug --target profiler --parallel",
       "group": {
         "kind": "build",
         "isDefault": true

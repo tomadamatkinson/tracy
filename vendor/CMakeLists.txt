@@ -29,14 +29,24 @@ endif()
 
 if (PULL_CAPSTONE)
     CPMAddPackage("gh:capstone-engine/capstone#5.0.1")
+    set(CAPSTONE_LIBRARIES capstone PARENT_SCOPE)
+endif()
+
+
+if ("${CAPSTONE_INCLUDE_DIRS}" STREQUAL "/usr/include/capstone")
+    # In source we use <capstone/capstone.h>
+    # This is a workaround for capstone installations that pass -I/usr/include/capstone to the compiler
+    list(APPEND CAPSTONE_INCLUDE_DIRS "/usr/include")
 endif()
 
 if (PULL_FREETYPE)
     CPMAddPackage("gh:freetype/freetype#VER-2-13-2")
+    set(FREETYPE_LIBRARIES freetype)
 endif()
 
 if (NOT EMSCRIPTEN AND PULL_GLFW)
     CPMAddPackage("gh:glfw/glfw#3.3.9")
+    set(GLFW_LIBRARIES glfw)
 endif()
 
 if (NOT EMSCRIPTEN AND UNIX AND PULL_TBB)
@@ -46,6 +56,7 @@ if (NOT EMSCRIPTEN AND UNIX AND PULL_TBB)
         GIT_TAG v2021.4.1
         OPTIONS "TBB_TEST OFF"
     )
+    set(TBB_LIBRARIES tbb)
 endif()
 
 CPMAddPackage("gh:btzy/nativefiledialog-extended#v1.1.1")
@@ -76,7 +87,7 @@ add_library(imgui STATIC ${IMGUI_FILES})
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 
 if (IMGUI_ENABLE_FREETYPE)
-    target_link_libraries(imgui PUBLIC freetype)
+    target_link_libraries(imgui PUBLIC ${FREETYPE_LIBRARIES})
 endif()
 
 add_library(imgui_backend STATIC 
