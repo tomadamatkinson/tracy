@@ -54,9 +54,9 @@ jobs:
       ## Configure
       - name: Configure
         run: |
-          cmake -B build/profiler -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_BUILD_TYPE=PROFILER
-          cmake -B build/client -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_BUILD_TYPE=CLIENT
-          cmake -B build/utils -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_BUILD_TYPE=UTILS
+          cmake -B build/profiler -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_BUILD_TARGET=PROFILER
+          cmake -B build/client -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_BUILD_TARGET=CLIENT
+          cmake -B build/utils -S . -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DTRACY_BUILD_TARGET=UTILS
 
       ## Build
       - name: Profiler GUI
